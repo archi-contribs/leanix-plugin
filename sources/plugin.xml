@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?eclipse version="3.4"?>
+
+<plugin>
+   <extension point="org.eclipse.ui.preferencePages">
+      <page class="org.archicontribs.leanix.preferences.LeanixPreferencePage"
+            id="org.archicontribs.leanix.preferences.LeanixPreferencePage"
+            name="Leanix plugin">
+      </page>
+   </extension>
+</plugin>
