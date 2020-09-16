@@ -9,10 +9,12 @@ package org.archicontribs.leanix;
 
 import java.io.File;
 
+import org.archicontribs.leanix.GUI.LeanixGui;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.Version;
@@ -68,9 +70,11 @@ public class LeanixPlugin extends Plugin {
 		System.setProperty("file.encoding", "UTF-8");
 		
 		preferenceStore = this.getPreferenceStore();
-		preferenceStore.setDefault("loggerMode",		      "simple");
-		preferenceStore.setDefault("loggerLevel",		      "INFO");
-		preferenceStore.setDefault("loggerFilename",	      System.getProperty("user.home")+File.separator+pluginName+".log");
+		preferenceStore.setDefault("leanixURL",					"https://www.leanix.com");
+		preferenceStore.setDefault("leanixApiKey",				"");
+		preferenceStore.setDefault("loggerMode",				"simple");
+		preferenceStore.setDefault("loggerLevel",				"INFO");
+		preferenceStore.setDefault("loggerFilename",			System.getProperty("user.home")+File.separator+pluginName+".log");
 		preferenceStore.setDefault("loggerExpert",
 		        "log4j.rootLogger                               = INFO, stdout, file\n"+
 				"\n"+
@@ -91,7 +95,14 @@ public class LeanixPlugin extends Plugin {
 		logger.info("Initialising "+pluginName+" plugin ...");
 		
 		logger.info("===============================================");
-		System.out.println("Im here !");
+		
+		// we force the class initialization by the SWT thread
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				LeanixGui.closePopup();
+			}
+		});
 	}
 	
 	/**
@@ -102,5 +113,34 @@ public class LeanixPlugin extends Plugin {
 			preferenceStore = new ScopedPreferenceStore( InstanceScope.INSTANCE, PLUGIN_ID );
 		}
 		return preferenceStore;
+	}
+	
+	/**
+	 * Check if two strings are equals
+	 * <br><br>
+	 * Replaces string.equals() to avoid nullPointerException
+	 * @param str1 first string to compare
+	 * @param str2 secong string to compare
+	 * @return true if the strings are both null or have the same content, false if they are different
+	 */
+	public static boolean areEqual(String str1, String str2) {
+		if ( str1 == null )
+			return str2 == null;
+
+		if ( str2 == null )
+			return false;			// as str1 cannot be null at this stage
+
+		return str1.equals(str2);
+	}
+	
+	/**
+	 * Check if a string  is null or empty
+	 * <br><br>
+	 * Replaces string.isEmpty() to avoid nullPointerException
+	 * @param str string to check
+	 * @return true if the string is null or empty, false if the string contains at least one char
+	 */
+	public static boolean isEmpty(String str) {
+		return (str==null) || str.isEmpty();
 	}
 }

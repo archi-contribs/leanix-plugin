@@ -4,17 +4,17 @@ Bundle-Name: Leanix import / export plugin for Archimate Tool
 Bundle-SymbolicName: org.archicontribs.leanix;singleton:=true
 Bundle-Version: 0.0.1.alpha
 Bundle-Vendor: Herve Jouin
-Bundle-Localization: plugin
 Bundle-ClassPath: lib/leanix-sdk-java-3.9.29.jar,
  lib/lombok.jar,
- .
+ .,
+ lib/log4j-1.2.17.jar
 Export-Package: org.archicontribs.leanix
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.swt,
  com.archimatetool.model;bundle-version="4.7.1",
  org.eclipse.jface,
- org.apache.log4j,
  org.eclipse.ui.workbench
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.archicontribs.leanix.LeanixPlugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: org.archicontribs.leanix
