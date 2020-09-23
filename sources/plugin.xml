@@ -8,4 +8,11 @@
             name="Leanix plugin">
       </page>
    </extension>
+   <extension
+      point="com.archimatetool.editor.importHandler">
+      <importHandler2 class="org.archicontribs.leanix.LeanixImporter"
+                      id="org.archicontribs.leanix.MyImporter"
+                      label="import from LeanIX">
+      </importHandler2>
+   </extension>
 </plugin>

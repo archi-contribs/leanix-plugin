@@ -67,8 +67,11 @@ public class LeanixPreferencePage extends FieldEditorPreferencePage	implements I
 	/** Text zone where the user must configure the API Key of LeanIX */
 	private Text txtApiKey;
 
-	/** Store the status of the mouse beeing over the Help Button or not */
+	/** Stores the status of the mouse beeing over the Help Button or not */
 	protected boolean mouseOverHelpButton = false;
+	
+	/** Stores the table of LeanIX graphQL requests */
+	private LeanixGraphqlTableEditor table;
 	
 	private RadioGroupFieldEditor loggerModeRadioGroupEditor;
 	private LeanixTextFieldEditor expertTextFieldEditor;
@@ -112,13 +115,6 @@ public class LeanixPreferencePage extends FieldEditorPreferencePage	implements I
 		behaviourComposite.setLayoutData(rowLayout);
 		behaviourComposite.setBackground(LeanixGui.GROUP_BACKGROUND_COLOR);
 		
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 1;
-		layout.marginWidth = 0;
-		layout.marginHeight = 10;
-		layout.horizontalSpacing = 8;
-		behaviourComposite.setLayout(layout);
-
 		TabItem behaviourTabItem = new TabItem(this.tabFolder, SWT.NONE);
 		behaviourTabItem.setText("  Behaviour  ");
 		behaviourTabItem.setControl(behaviourComposite);
@@ -151,17 +147,17 @@ public class LeanixPreferencePage extends FieldEditorPreferencePage	implements I
 		gd.grabExcessHorizontalSpace = true;
 		grpVersion.setLayoutData(gd);
 
-		Group grpMiscellaneous = new Group(behaviourComposite, SWT.NONE);
-		grpMiscellaneous.setBackground(LeanixGui.COMPO_BACKGROUND_COLOR);
-		grpMiscellaneous.setText("Miscellaneous:");
-		grpMiscellaneous.setLayout(new FormLayout());
+		Group grpLeanix = new Group(behaviourComposite, SWT.NONE);
+		grpLeanix.setBackground(LeanixGui.COMPO_BACKGROUND_COLOR);
+		grpLeanix.setText("Leanix:");
+		grpLeanix.setLayout(new FormLayout());
 
 		gd = new GridData();
 		gd.horizontalAlignment = GridData.FILL;
 		gd.grabExcessHorizontalSpace = true;
-		grpMiscellaneous.setLayoutData(gd);
+		grpLeanix.setLayoutData(gd);
 
-		Label lblURL = new Label(grpMiscellaneous, SWT.NONE);
+		Label lblURL = new Label(grpLeanix, SWT.NONE);
 		lblURL.setBackground(LeanixGui.COMPO_BACKGROUND_COLOR);
 		lblURL.setText("LeanIX URL:");
 		fd = new FormData();
@@ -169,7 +165,7 @@ public class LeanixPreferencePage extends FieldEditorPreferencePage	implements I
 		fd.left = new FormAttachment(0, 10);
 		lblURL.setLayoutData(fd);
 
-		this.txtLeanixURL = new Text(grpMiscellaneous, SWT.BORDER);
+		this.txtLeanixURL = new Text(grpLeanix, SWT.BORDER);
 		this.txtLeanixURL.setText(preferenceStore.getString("leanixURL"));
 		fd = new FormData();
 		fd.top = new FormAttachment(lblURL, -3, SWT.TOP);
@@ -178,7 +174,7 @@ public class LeanixPreferencePage extends FieldEditorPreferencePage	implements I
 		fd.right = new FormAttachment(lblURL, 450, SWT.RIGHT);
 		this.txtLeanixURL.setLayoutData(fd);
 
-		Label lblApiKey = new Label(grpMiscellaneous, SWT.NONE);
+		Label lblApiKey = new Label(grpLeanix, SWT.NONE);
 		lblApiKey.setBackground(LeanixGui.COMPO_BACKGROUND_COLOR);
 		lblApiKey.setText("Api Key:");
 		fd = new FormData();
@@ -186,7 +182,7 @@ public class LeanixPreferencePage extends FieldEditorPreferencePage	implements I
 		fd.left = new FormAttachment(0, 10);
 		lblApiKey.setLayoutData(fd);
 
-		this.txtApiKey = new Text(grpMiscellaneous, SWT.BORDER);
+		this.txtApiKey = new Text(grpLeanix, SWT.BORDER);
 		this.txtApiKey.setText(preferenceStore.getString("leanixApiKey"));
 		fd = new FormData();
 		fd.top = new FormAttachment(lblApiKey, -3, SWT.TOP);
@@ -194,6 +190,9 @@ public class LeanixPreferencePage extends FieldEditorPreferencePage	implements I
 		fd.left = new FormAttachment(txtLeanixURL, 0, SWT.LEFT);
 		fd.right = new FormAttachment(txtLeanixURL, 0, SWT.RIGHT);
 		this.txtApiKey.setLayoutData(fd);
+		
+		this.table = new LeanixGraphqlTableEditor("GraphQL", "", behaviourComposite);
+		addField(this.table);
 
 		Group grpHelp = new Group(behaviourComposite, SWT.NONE);
 		grpHelp.setBackground(LeanixGui.COMPO_BACKGROUND_COLOR);

@@ -1,3 +1,8 @@
+/**
+ * A field editor that manages the import menu of the plugin
+ * 
+ * @author Herve Jouin
+ */
 package org.archicontribs.leanix.menu;
 
 import org.apache.log4j.Level;

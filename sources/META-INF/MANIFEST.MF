@@ -7,13 +7,15 @@ Bundle-Vendor: Herve Jouin
 Bundle-ClassPath: lib/leanix-sdk-java-3.9.29.jar,
  lib/lombok.jar,
  .,
- lib/log4j-1.2.17.jar
+ lib/log4j-1.2.17.jar,
+ lib/gson-2.8.6.jar
 Export-Package: org.archicontribs.leanix
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.swt,
  com.archimatetool.model;bundle-version="4.7.1",
  org.eclipse.jface,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ com.archimatetool.editor
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.archicontribs.leanix.LeanixPlugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

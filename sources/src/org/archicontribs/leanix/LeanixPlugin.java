@@ -1,5 +1,5 @@
 /**
- * LeanIX Model Importer / Exporter
+ * LeanIX component Importer
  * 
  * The LeanixPlugin class implements static methods and properties used everywhere else in the Leanix plugin. 
  * 
@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.Version;
 
@@ -72,6 +71,13 @@ public class LeanixPlugin extends Plugin {
 		preferenceStore = this.getPreferenceStore();
 		preferenceStore.setDefault("leanixURL",					"https://www.leanix.com");
 		preferenceStore.setDefault("leanixApiKey",				"");
+		preferenceStore.setDefault("nbLeanixGraphql",			1);
+		preferenceStore.setDefault("leanixGraphql_0",			"{\n"
+																+ "   \"name\": \"Get application by name\",\n"
+																+ "   \"request\": \"query {\n   factSheet(type: Application, name: $name) {\n      id\n      displayName\n      ... on Application {\n         businessCriticality\n      }\n   }\n}\",\n"
+																+ "   \"variables\": [\n      {\n         \"variable\": \"$name\",\n         \"label\": \"Nom de l'application :\"\n      }\n   ],\n"
+																+ "   \"maps\": [\n      {\n         \"leanixProperty\": \"id\",\n         \"archiClass\": \"ApplicationComponent\",\n         \"archiProperty\": \"property:Leanix ID\",\n         \"otherProperties\": [\n            {\n               \"leanix_property\": \"displayName\",\n               \"archi_property\": \"name\"\n            }\n         ]\n      }\n   ]\n"
+																+ "}");
 		preferenceStore.setDefault("loggerMode",				"simple");
 		preferenceStore.setDefault("loggerLevel",				"INFO");
 		preferenceStore.setDefault("loggerFilename",			System.getProperty("user.home")+File.separator+pluginName+".log");
