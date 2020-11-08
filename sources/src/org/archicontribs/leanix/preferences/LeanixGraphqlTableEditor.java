@@ -1,5 +1,5 @@
 /**
- * A field editor that manages the list of databases configurations
+ * A field editor that manages the list of graphql requests
  * 
  * @author Herve Jouin
  */
@@ -7,7 +7,8 @@
 package org.archicontribs.leanix.preferences;
 
 import java.sql.SQLException;
-import org.apache.log4j.Level;
+import java.util.ArrayList;
+
 import org.archicontribs.leanix.LeanixLogger;
 import org.archicontribs.leanix.LeanixPlugin;
 import org.archicontribs.leanix.GUI.LeanixGui;
@@ -34,15 +35,10 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-
 public class LeanixGraphqlTableEditor extends FieldEditor {
 	private final LeanixLogger logger = new LeanixLogger(LeanixGraphqlTableEditor.class);
 	private final IPersistentPreferenceStore preferenceStore = LeanixPlugin.INSTANCE.getPreferenceStore();
-	private final Gson gson = new GsonBuilder().create();
-	
+
 	Group grpGraphql;
 	Table tblGraphql;
 
@@ -81,7 +77,7 @@ public class LeanixGraphqlTableEditor extends FieldEditor {
 		this.grpGraphql.setFont(parent.getFont());
 		this.grpGraphql.setLayout(new FormLayout());
 		this.grpGraphql.setBackground(LeanixGui.COMPO_BACKGROUND_COLOR);
-		this.grpGraphql.setText("Databases: ");
+		this.grpGraphql.setText("GraphQL requests: ");
 		
         /*
          * We calculate the default height of a Text widget
@@ -200,21 +196,14 @@ public class LeanixGraphqlTableEditor extends FieldEditor {
     protected void doLoad() {
     	this.tblGraphql.removeAll();
     	
-    	int nbLeanixGraphql = preferenceStore.getInt("nbLeanixGraphql");
-    	logger.debug("Getting "+nbLeanixGraphql+" Leanix GrapqhQL entries from the preference store");
-    	
-    	for ( int i = 0; i < nbLeanixGraphql; ++i ) {
-    		try {
-    			LeanixGraphql leanixGraphql = gson.fromJson(preferenceStore.getString("leanixGraphql_"+i), LeanixGraphql.class);
-    			
-        		TableItem tableItem = new TableItem(this.tblGraphql, SWT.NONE);
-    			tableItem.setText(leanixGraphql.getName());
-    			tableItem.setData("leanixGraphql", leanixGraphql);
-    			
-    			logger.trace("Got graphql entry \""+leanixGraphql.getName()+"\"");
-    		} catch (Exception err) { // MalformedJsonException
-    			LeanixGui.popup(Level.ERROR, "Failed to parse graphql entry from preference store.\n\nPlease check \"leanixGraphql_"+i+"\" entry.", err);
-    		}
+    	ArrayList<LeanixGraphql> leanixGraphqlList = LeanixGraphql.getAllFromPreferenceStore(preferenceStore);
+
+    	for ( int i = 0; i < leanixGraphqlList.size(); ++i ) {
+			LeanixGraphql leanixGraphql = leanixGraphqlList.get(i);
+			
+    		TableItem tableItem = new TableItem(this.tblGraphql, SWT.NONE);
+			tableItem.setText(leanixGraphql.getName());
+			tableItem.setData("leanixGraphql", leanixGraphql);
     	}
 	}
 
@@ -223,37 +212,17 @@ public class LeanixGraphqlTableEditor extends FieldEditor {
 	 */
 	@Override
     protected void doStore() {
-		cleanupPreferenceStore();
+		LeanixGraphql.cleanupPreferenceStore(preferenceStore);
 		
-		int nbLeanixGraphql = this.tblGraphql.getItemCount(); 
-		preferenceStore.setValue("nbLeanixGraphql", nbLeanixGraphql);
+		ArrayList<LeanixGraphql> leanixGraphqlList = new ArrayList<LeanixGraphql>();
 		
-		logger.debug("Storing "+nbLeanixGraphql+" Leanix GrapqhQL entries to the preference store");
-		
-		for ( int i = 0; i < nbLeanixGraphql; ++i ) {
-			TableItem tableItem = this.tblGraphql.getItem(i);
-			LeanixGraphql leanixGraphql = (LeanixGraphql)tableItem.getData("leanixGraphql");
-			preferenceStore.setValue("leanixGraphql_"+i, gson.toJson(leanixGraphql));
-			
-			logger.trace("Store graphql entry \""+leanixGraphql.getName()+"\"");
+		for ( int i = 0; i < this.tblGraphql.getItemCount(); ++i ) {
+			leanixGraphqlList.add((LeanixGraphql)this.tblGraphql.getItem(i).getData("leanixGraphql"));
 		}
-
+		
+		LeanixGraphql.storeAllToPreferenceStore(preferenceStore, leanixGraphqlList);
 	}
 	
-	/** we delete all the graphql entries from the preference store */
-	private void cleanupPreferenceStore() {
-		logger.debug("Cleaning up all LeanIX GrapqhQL entries to the preference store");
-
-		preferenceStore.setDefault("nbLeanixGraphql", 0);
-		preferenceStore.setValue("nbLeanixGraphql", 0);
-		
-		// it is unlikely that user has got more than 100 configured GraphQLs
-		for ( int i = 0; i < 100 ; ++i ) {
-			preferenceStore.setDefault("leanixGraphql_"+i, "");
-			preferenceStore.setValue("leanixGraphql_"+i, "");
-		}
-	}
-
 	/*
 	 * (non-Javadoc) Method declared on FieldEditor.
 	 */

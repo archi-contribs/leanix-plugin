@@ -74,6 +74,7 @@ public class LeanixPlugin extends Plugin {
 		preferenceStore.setDefault("nbLeanixGraphql",			1);
 		preferenceStore.setDefault("leanixGraphql_0",			"{\n"
 																+ "   \"name\": \"Get application by name\",\n"
+																+ "   \"description\": \"Get an application from Leanix provided its name\",\n"
 																+ "   \"request\": \"query {\n   factSheet(type: Application, name: $name) {\n      id\n      displayName\n      ... on Application {\n         businessCriticality\n      }\n   }\n}\",\n"
 																+ "   \"variables\": [\n      {\n         \"variable\": \"$name\",\n         \"label\": \"Nom de l'application :\"\n      }\n   ],\n"
 																+ "   \"maps\": [\n      {\n         \"leanixProperty\": \"id\",\n         \"archiClass\": \"ApplicationComponent\",\n         \"archiProperty\": \"property:Leanix ID\",\n         \"otherProperties\": [\n            {\n               \"leanix_property\": \"displayName\",\n               \"archi_property\": \"name\"\n            }\n         ]\n      }\n   ]\n"

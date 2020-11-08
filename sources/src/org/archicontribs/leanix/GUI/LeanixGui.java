@@ -8,15 +8,20 @@ package org.archicontribs.leanix.GUI;
 
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 import org.archicontribs.leanix.LeanixLogger;
 import org.archicontribs.leanix.LeanixPlugin;
+import org.archicontribs.leanix.preferences.LeanixGraphql;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.PaintEvent;
@@ -34,6 +39,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -42,17 +48,20 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.PreferencesUtil;
+
 import lombok.Getter;
 import lombok.Setter;
 
 
-public class LeanixGui {
+public abstract class LeanixGui {
     protected static final LeanixLogger logger = new LeanixLogger(LeanixGui.class);
 
     @Getter @Setter private boolean closedByUser = false;
 
-        protected static final Display display = Display.getCurrent() == null ? Display.getDefault() : Display.getCurrent();
+    protected static final Display display = Display.getCurrent() == null ? Display.getDefault() : Display.getCurrent();
     protected Shell dialog;
 
     String HELP_HREF = null;
@@ -104,6 +113,11 @@ public class LeanixGui {
     protected Composite compoRightBottom;
     private Composite compoBottom;
 
+    private Group grpGraphqls;
+    @Getter protected Combo comboGraphqls;
+    private Group grpVariables;
+    Set<Widget> setVariablesWidgets = new HashSet<Widget>();
+    protected Button btnSetPreferences;
     protected Button btnClose;
     protected Button btnDoAction;
     protected Label btnHelp;
@@ -111,8 +125,7 @@ public class LeanixGui {
     protected Group grpProgressBar = null;
     protected Label lblProgressBar;
     private ProgressBar progressBar;
-
-    protected Group grpLeanix = null;
+    
     protected Group grpMessage = null;
     private CLabel lblMessage;
 
@@ -121,13 +134,15 @@ public class LeanixGui {
 
     /** Default margin between widgets */
     @Getter private int defaultMargin = 10;
+    
+    ArrayList<LeanixGraphql> leanixGraphqlList = null;
 
 
     /**
      * Create the dialog with minimal graphical objects: 
-     * 		left composite: picture of a database with Archimate diagram inside, the plugin version, (my name of course) and 4 icons + texts to list actions 
-     * 		bottom composite: Close, doAction button at the right and help buton on the left
-     * 		right composite: database list in a combo and a button to set preferences
+     * 		left composite: plugin's logo and version 
+     * 		bottom composite: Close, doAction button at the right and help button on the left
+     * 		right composite: list of s in a combo and a button to directly access preferences
      */
     protected LeanixGui(String title) {
         logger.debug("Creating Form GUI.");
@@ -139,16 +154,16 @@ public class LeanixGui {
         this.dialog.setMinimumSize(800, 700);
         this.dialog.setSize(1024, 700);
         
-        int scaleFactor = 1;
-        try {
-        	if ( (Toolkit.getDefaultToolkit().getScreenResolution() != 0) && (this.dialog.getDisplay().getDPI() != null) && (this.dialog.getDisplay().getDPI().x != 0) )
-        		scaleFactor = Toolkit.getDefaultToolkit().getScreenResolution() / this.dialog.getDisplay().getDPI().x;
-        } catch ( @SuppressWarnings("unused") HeadlessException ign) {
-        	// nothing to do
-        }
-        if ( scaleFactor == 0 )
-        	scaleFactor = 1;		// just in case
-        this.dialog.setLocation(((Toolkit.getDefaultToolkit().getScreenSize().width / scaleFactor) - this.dialog.getSize().x) / 2, ((Toolkit.getDefaultToolkit().getScreenSize().height / scaleFactor) - this.dialog.getSize().y) / 2);
+        //int scaleFactor = 1;
+        //try {
+        //	if ( (Toolkit.getDefaultToolkit().getScreenResolution() != 0) && (this.dialog.getDisplay().getDPI() != null) && (this.dialog.getDisplay().getDPI().x != 0) )
+        //		scaleFactor = Toolkit.getDefaultToolkit().getScreenResolution() / this.dialog.getDisplay().getDPI().x;
+        //} catch ( @SuppressWarnings("unused") HeadlessException ign) {
+        //	// nothing to do
+        //}
+        //if ( scaleFactor == 0 )
+        //	scaleFactor = 1;		// just in case
+        //this.dialog.setLocation(((Toolkit.getDefaultToolkit().getScreenSize().width / scaleFactor) - this.dialog.getSize().x) / 2, ((Toolkit.getDefaultToolkit().getScreenSize().height / scaleFactor) - this.dialog.getSize().y) / 2);
         //this.dialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - this.dialog.getSize().x) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - this.dialog.getSize().y) / 2);
         this.dialog.setLayout(new FormLayout());
 
@@ -245,33 +260,68 @@ public class LeanixGui {
         this.compoRightBottom.setLayoutData(fd_compoRightBottom);
         this.compoRightBottom.setLayout(new FormLayout());
 
-        this.grpLeanix = new Group(this.compoRightTop, SWT.SHADOW_ETCHED_IN);
-        this.grpLeanix.setVisible(true);
-        this.grpLeanix.setData("visible", true);
-        this.grpLeanix.setBackground(GROUP_BACKGROUND_COLOR);
-        this.grpLeanix.setFont(GROUP_TITLE_FONT);
-        this.grpLeanix.setText("Leanix: ");
+        this.grpGraphqls = new Group(this.compoRightTop, SWT.SHADOW_ETCHED_IN);
+        this.grpGraphqls.setVisible(true);
+        this.grpGraphqls.setData("visible", true);
+        this.grpGraphqls.setBackground(GROUP_BACKGROUND_COLOR);
+        this.grpGraphqls.setFont(GROUP_TITLE_FONT);
+        this.grpGraphqls.setText("GraphQL requests: ");
         fd = new FormData();
         fd.top = new FormAttachment(0);
         fd.left = new FormAttachment(0);
         fd.right = new FormAttachment(100);
-        fd.bottom = new FormAttachment(100);
-        this.grpLeanix.setLayoutData(fd);
-        this.grpLeanix.setLayout(new FormLayout());
+        this.grpGraphqls.setLayoutData(fd);
+        this.grpGraphqls.setLayout(new FormLayout());
         
-        Label lblLeanixUrl = new Label(this.grpLeanix, SWT.NONE);
-        lblLeanixUrl.setText("LeanIX URL:");
+        Label lblRegisteredGraphqls= new Label(this.grpGraphqls, SWT.NONE);
+        lblRegisteredGraphqls.setText("Registered GraphQL requests:");
         fd = new FormData();
         fd.top = new FormAttachment(0, 10);
         fd.left = new FormAttachment(0, 10);
-        lblLeanixUrl.setLayoutData(fd);
+        lblRegisteredGraphqls.setLayoutData(fd);
         
-        Label lblLeaniApiKey = new Label(this.grpLeanix, SWT.NONE);
-        lblLeaniApiKey.setText("API Key:");
+        this.btnSetPreferences = new Button(this.grpGraphqls, SWT.NONE);
+        this.btnSetPreferences.setText("Set preferences ...");
+        this.btnSetPreferences.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent event) { try { setPreferences(); } catch (Exception e) { popup(Level.ERROR, "Failed to set preferences", e); } }
+            @Override
+            public void widgetDefaultSelected(SelectionEvent event) { widgetSelected(event); }
+        });
         fd = new FormData();
-        fd.top = new FormAttachment(lblLeanixUrl, 10);
-        fd.left = new FormAttachment(0, 10);
-        lblLeaniApiKey.setLayoutData(fd);
+        fd.top = new FormAttachment(lblRegisteredGraphqls, 0, SWT.CENTER);
+        fd.right = new FormAttachment(100, -10);
+        this.btnSetPreferences.setLayoutData(fd);
+        
+        this.comboGraphqls = new Combo(this.grpGraphqls, SWT.NONE | SWT.READ_ONLY);
+        this.comboGraphqls.setBackground(GROUP_BACKGROUND_COLOR);
+        this.comboGraphqls.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent event) { graphqlSelected(); }
+            @Override
+            public void widgetDefaultSelected(SelectionEvent event) { widgetSelected(event); }
+        });
+        fd = new FormData();
+        fd.top = new FormAttachment(lblRegisteredGraphqls, 0, SWT.CENTER);
+        fd.left = new FormAttachment(lblRegisteredGraphqls, 10);
+        fd.right = new FormAttachment(this.btnSetPreferences, -40);
+        this.comboGraphqls.setLayoutData(fd);
+        
+        // we ask the grpGraphqls to calculate its height
+        this.grpGraphqls.pack();
+        
+        this.grpVariables = new Group(this.compoRightBottom, SWT.SHADOW_ETCHED_IN);
+        this.grpVariables.setVisible(true);
+        this.grpVariables.setBackground(GROUP_BACKGROUND_COLOR);
+        this.grpVariables.setFont(GROUP_TITLE_FONT);
+        this.grpVariables.setText("GraphQL variables: ");
+        fd = new FormData();
+        fd.top = new FormAttachment(this.grpGraphqls,defaultMargin);
+        fd.left = new FormAttachment(0);
+        fd.right = new FormAttachment(100);
+        fd.bottom = new FormAttachment(100);
+        this.grpVariables.setLayoutData(fd);
+        this.grpVariables.setLayout(new FormLayout());
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////// compoBottom //////////////////////////////////////////////////////////////////////
@@ -337,6 +387,26 @@ public class LeanixGui {
         this.dialog.layout();
         refreshDisplay();
     }
+    
+    /**
+     * Gets the list of configured graphqls, fills-in the comboGraphqls and selects the first graphql
+     * @throws Exception 
+     */
+    protected void getGraphqls() {
+        refreshDisplay();
+
+        this.leanixGraphqlList = LeanixGraphql.getAllFromPreferenceStore(LeanixPlugin.INSTANCE.getPreferenceStore());
+        if ( this.leanixGraphqlList.size() == 0 ) {
+            popup(Level.ERROR, "You haven't configure any GraphQL request yet.\n\nPlease setup at least one database in Archi preferences.");
+        } else {
+            for (LeanixGraphql leanixGraphql: this.leanixGraphqlList)
+           		this.comboGraphqls.add(leanixGraphql.getName());
+            this.comboGraphqls.setData("LeanixGraphqlList", this.leanixGraphqlList);
+            this.comboGraphqls.select(0);
+            this.comboGraphqls.notifyListeners(SWT.Selection, new Event());		// calls the graphqlSelected() method
+        }
+    }
+    
     
     /** 
      * Sets the reference of the online help
@@ -669,8 +739,8 @@ public class LeanixGui {
         if (this.grpProgressBar != null )
             this.grpProgressBar.setVisible(false);
 
-        if ( this.grpLeanix != null )
-            this.grpLeanix.setVisible(false);
+        if ( this.grpGraphqls != null )
+            this.grpGraphqls.setVisible(false);
 
         this.compoRightTop.layout();
 
@@ -697,8 +767,8 @@ public class LeanixGui {
             if (this.grpProgressBar != null && (this.grpProgressBar.getData("visible") != null) )
                 this.grpProgressBar.setVisible((boolean)this.grpProgressBar.getData("visible"));
 
-            if ( this.grpLeanix != null && (this.grpLeanix.getData("visible") != null) )
-                this.grpLeanix.setVisible((boolean)this.grpLeanix.getData("visible"));
+            if ( this.grpGraphqls != null && (this.grpGraphqls.getData("visible") != null) )
+                this.grpGraphqls.setVisible((boolean)this.grpGraphqls.getData("visible"));
 
             this.compoRightTop.layout();
             refreshDisplay();
@@ -729,5 +799,34 @@ public class LeanixGui {
         while ( LeanixGui.display.readAndDispatch() ) {
             // nothing to do
         }
+    }
+    
+    /**
+     * Listener called when a graphql is selected in the combo<br>
+     * Must be overridden
+     */
+    protected abstract void graphqlSelected();
+    
+    /**
+     * Called when the user clicks on the "set preferences" button<br>
+     * This method opens up the leanix plugin preference page that the user can configure preferences.
+     * @throws Exception 
+     */
+    protected void setPreferences() throws Exception {
+        if ( logger.isDebugEnabled() ) logger.debug("Openning preference page ...");
+        PreferenceDialog prefDialog = PreferencesUtil.createPreferenceDialogOn(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "org.archicontribs.leanix.DBPreferencePage", null, null);
+        prefDialog.setBlockOnOpen(true);
+        if ( prefDialog.open() == 0 ) {
+            if ( logger.isDebugEnabled() ) logger.debug("Resetting settings from preferences ...");
+
+            this.comboGraphqls.removeAll();
+
+            //TODO
+        } else {
+            if ( logger.isDebugEnabled() ) logger.debug("Preferences cancelled ...");
+            if ( this.comboGraphqls.getItemCount() == 0 )
+                popup(Level.ERROR, "You won't be able to import until a GraphQL request is configured in the preferences.");
+        }
+        this.comboGraphqls.setFocus();
     }
 }
