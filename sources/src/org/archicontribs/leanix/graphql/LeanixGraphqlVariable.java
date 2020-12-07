@@ -19,5 +19,8 @@ public class LeanixGraphqlVariable {
 	/** label to show to the user */
 	@Getter @Setter @NonNull String label = null;
 	
-	// todo: add type (int, string, ...), validation (regexp), ...
+	/** label to show to the user */
+	@Getter @Setter @NonNull String defaultValue = null;
+	
+	// todo: add type (int, string, ...), default value, validation (regexp), ...
 }

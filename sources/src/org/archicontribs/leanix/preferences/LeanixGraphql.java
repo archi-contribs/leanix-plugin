@@ -33,8 +33,8 @@ public class LeanixGraphql {
 	/** Entry's dexcription */
 	@Getter @Setter private String description = null;
 	
-	/** Entry's graphql request */
-	@Getter @Setter private String request = null;
+	/** Entry's graphql query */
+	@Getter @Setter private String query = null;
 	
 	/** Entry's variables */
 	@Getter private ArrayList<LeanixGraphqlVariable> variables = null;

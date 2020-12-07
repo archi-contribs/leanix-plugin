@@ -9,7 +9,6 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry exported="true" kind="lib" path="lib/lombok.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/leanix-sdk-java-3.9.29.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

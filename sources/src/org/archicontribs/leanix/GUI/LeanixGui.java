@@ -6,13 +6,10 @@
 
 package org.archicontribs.leanix.GUI;
 
-import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 import org.apache.log4j.Level;
@@ -48,7 +45,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
@@ -115,8 +111,7 @@ public abstract class LeanixGui {
 
     private Group grpGraphqls;
     @Getter protected Combo comboGraphqls;
-    private Group grpVariables;
-    Set<Widget> setVariablesWidgets = new HashSet<Widget>();
+    protected Group grpVariables;
     protected Button btnSetPreferences;
     protected Button btnClose;
     protected Button btnDoAction;
@@ -265,7 +260,7 @@ public abstract class LeanixGui {
         this.grpGraphqls.setData("visible", true);
         this.grpGraphqls.setBackground(GROUP_BACKGROUND_COLOR);
         this.grpGraphqls.setFont(GROUP_TITLE_FONT);
-        this.grpGraphqls.setText("GraphQL requests: ");
+        this.grpGraphqls.setText("GraphQL queries: ");
         fd = new FormData();
         fd.top = new FormAttachment(0);
         fd.left = new FormAttachment(0);
@@ -274,7 +269,7 @@ public abstract class LeanixGui {
         this.grpGraphqls.setLayout(new FormLayout());
         
         Label lblRegisteredGraphqls= new Label(this.grpGraphqls, SWT.NONE);
-        lblRegisteredGraphqls.setText("Registered GraphQL requests:");
+        lblRegisteredGraphqls.setText("Registered GraphQL queries:");
         fd = new FormData();
         fd.top = new FormAttachment(0, 10);
         fd.left = new FormAttachment(0, 10);
@@ -397,7 +392,7 @@ public abstract class LeanixGui {
 
         this.leanixGraphqlList = LeanixGraphql.getAllFromPreferenceStore(LeanixPlugin.INSTANCE.getPreferenceStore());
         if ( this.leanixGraphqlList.size() == 0 ) {
-            popup(Level.ERROR, "You haven't configure any GraphQL request yet.\n\nPlease setup at least one database in Archi preferences.");
+            popup(Level.ERROR, "You haven't configure any GraphQL query yet.\n\nPlease setup at least one database in Archi preferences.");
         } else {
             for (LeanixGraphql leanixGraphql: this.leanixGraphqlList)
            		this.comboGraphqls.add(leanixGraphql.getName());
@@ -825,7 +820,7 @@ public abstract class LeanixGui {
         } else {
             if ( logger.isDebugEnabled() ) logger.debug("Preferences cancelled ...");
             if ( this.comboGraphqls.getItemCount() == 0 )
-                popup(Level.ERROR, "You won't be able to import until a GraphQL request is configured in the preferences.");
+                popup(Level.ERROR, "You won't be able to import until a GraphQL query is configured in the preferences.");
         }
         this.comboGraphqls.setFocus();
     }

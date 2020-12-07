@@ -4,9 +4,8 @@ Bundle-Name: Leanix import / export plugin for Archimate Tool
 Bundle-SymbolicName: org.archicontribs.leanix;singleton:=true
 Bundle-Version: 0.0.1.alpha
 Bundle-Vendor: Herve Jouin
-Bundle-ClassPath: lib/leanix-sdk-java-3.9.29.jar,
+Bundle-ClassPath: .,
  lib/lombok.jar,
- .,
  lib/log4j-1.2.17.jar,
  lib/gson-2.8.6.jar
 Export-Package: org.archicontribs.leanix

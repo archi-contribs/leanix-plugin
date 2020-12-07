@@ -61,16 +61,16 @@ public class LeanixPreferencePage extends FieldEditorPreferencePage	implements I
 	/** Tab folder that will holds the behaviour and logger tabs on the preference page */
 	private TabFolder tabFolder;
 
-	/** Text zone where the user must configure the URL of LeanIX */
-	private Text txtLeanixURL;
+	/** Text zone where the user must configure the LeanIX host */
+	private Text txtLeanixHost;
 
-	/** Text zone where the user must configure the API Key of LeanIX */
-	private Text txtApiKey;
+	/** Text zone where the user must configure the API token of LeanIX */
+	private Text txtApiToken;
 
 	/** Stores the status of the mouse beeing over the Help Button or not */
 	protected boolean mouseOverHelpButton = false;
 	
-	/** Stores the table of LeanIX graphQL requests */
+	/** Stores the table of LeanIX graphQL queries */
 	private LeanixGraphqlTableEditor table;
 	
 	private RadioGroupFieldEditor loggerModeRadioGroupEditor;
@@ -157,39 +157,39 @@ public class LeanixPreferencePage extends FieldEditorPreferencePage	implements I
 		gd.grabExcessHorizontalSpace = true;
 		grpLeanix.setLayoutData(gd);
 
-		Label lblURL = new Label(grpLeanix, SWT.NONE);
-		lblURL.setBackground(LeanixGui.COMPO_BACKGROUND_COLOR);
-		lblURL.setText("LeanIX URL:");
+		Label lblHost = new Label(grpLeanix, SWT.NONE);
+		lblHost.setBackground(LeanixGui.COMPO_BACKGROUND_COLOR);
+		lblHost.setText("LeanIX host:");
 		fd = new FormData();
 		fd.top = new FormAttachment(0, 5);
 		fd.left = new FormAttachment(0, 10);
-		lblURL.setLayoutData(fd);
+		lblHost.setLayoutData(fd);
 
-		this.txtLeanixURL = new Text(grpLeanix, SWT.BORDER);
-		this.txtLeanixURL.setText(preferenceStore.getString("leanixURL"));
+		this.txtLeanixHost = new Text(grpLeanix, SWT.BORDER);
+		this.txtLeanixHost.setText(preferenceStore.getString("leanixHost"));
 		fd = new FormData();
-		fd.top = new FormAttachment(lblURL, -3, SWT.TOP);
-		fd.bottom = new FormAttachment(lblURL, 3, SWT.BOTTOM);
-		fd.left = new FormAttachment(lblURL, 10);
-		fd.right = new FormAttachment(lblURL, 450, SWT.RIGHT);
-		this.txtLeanixURL.setLayoutData(fd);
+		fd.top = new FormAttachment(lblHost, -3, SWT.TOP);
+		fd.bottom = new FormAttachment(lblHost, 3, SWT.BOTTOM);
+		fd.left = new FormAttachment(lblHost, 10);
+		fd.right = new FormAttachment(lblHost, 450, SWT.RIGHT);
+		this.txtLeanixHost.setLayoutData(fd);
 
 		Label lblApiKey = new Label(grpLeanix, SWT.NONE);
 		lblApiKey.setBackground(LeanixGui.COMPO_BACKGROUND_COLOR);
 		lblApiKey.setText("Api Key:");
 		fd = new FormData();
-		fd.top = new FormAttachment(lblURL, 10);
+		fd.top = new FormAttachment(lblHost, 10);
 		fd.left = new FormAttachment(0, 10);
 		lblApiKey.setLayoutData(fd);
 
-		this.txtApiKey = new Text(grpLeanix, SWT.BORDER);
-		this.txtApiKey.setText(preferenceStore.getString("leanixApiKey"));
+		this.txtApiToken = new Text(grpLeanix, SWT.BORDER);
+		this.txtApiToken.setText(preferenceStore.getString("leanixApiKey"));
 		fd = new FormData();
 		fd.top = new FormAttachment(lblApiKey, -3, SWT.TOP);
 		fd.bottom = new FormAttachment(lblApiKey, 3, SWT.BOTTOM);
-		fd.left = new FormAttachment(txtLeanixURL, 0, SWT.LEFT);
-		fd.right = new FormAttachment(txtLeanixURL, 0, SWT.RIGHT);
-		this.txtApiKey.setLayoutData(fd);
+		fd.left = new FormAttachment(txtLeanixHost, 0, SWT.LEFT);
+		fd.right = new FormAttachment(txtLeanixHost, 0, SWT.RIGHT);
+		this.txtApiToken.setLayoutData(fd);
 		
 		this.table = new LeanixGraphqlTableEditor("GraphQL", "", behaviourComposite);
 		addField(this.table);
@@ -267,7 +267,7 @@ public class LeanixPreferencePage extends FieldEditorPreferencePage	implements I
 		this.loggerModeRadioGroupEditor = new RadioGroupFieldEditor("loggerMode", "", 1, LOGGER_MODES, this.loggerComposite, true);
 		addField(this.loggerModeRadioGroupEditor);
 
-		this.traceGraphqlFieldEditor = new BooleanFieldEditor("traceSQL", "Include GraphQL requests in trace mode", this.loggerComposite);
+		this.traceGraphqlFieldEditor = new BooleanFieldEditor("traceSQL", "Include GraphQL queries in trace mode", this.loggerComposite);
 		addField(this.traceGraphqlFieldEditor);
 
 		this.simpleModeGroup = new Group(this.loggerComposite, SWT.NONE);
@@ -361,8 +361,8 @@ public class LeanixPreferencePage extends FieldEditorPreferencePage	implements I
     public boolean performOk() {
 		this.logger.debug("Saving preferences in preference store");
 		
-    	preferenceStore.setValue("leanixURL", this.txtLeanixURL.getText());
-    	preferenceStore.setValue("leanixApiKey", this.txtApiKey.getText());
+    	preferenceStore.setValue("leanixHost", this.txtLeanixHost.getText());
+    	preferenceStore.setValue("leanixApiToken", this.txtApiToken.getText());
 		
     	// the loggerMode is a private property, so we use reflection to access it
     			try {

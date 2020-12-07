@@ -289,8 +289,8 @@ public class LeanixGraphqlVariablesEditor extends FieldEditor {
         
         Label graphqlNameLabel = new Label(editGraphqlDialogArea, SWT.NONE);
         Text graphqlName = new Text(editGraphqlDialogArea, SWT.BORDER);
-        Label graphqlRequestLabel = new Label(editGraphqlDialogArea, SWT.NONE);
-        Text graphqlRequest = new Text(editGraphqlDialogArea, SWT.MULTI | SWT.BORDER | SWT.HORIZONTAL | SWT.VERTICAL);
+        Label graphqlQueryLabel = new Label(editGraphqlDialogArea, SWT.NONE);
+        Text graphqlquery = new Text(editGraphqlDialogArea, SWT.MULTI | SWT.BORDER | SWT.HORIZONTAL | SWT.VERTICAL);
         Label graphqlVariablesLabel = new Label(editGraphqlDialogArea, SWT.NONE);
         Text graphqlVariables = new Text(editGraphqlDialogArea, SWT.MULTI | SWT.BORDER | SWT.HORIZONTAL | SWT.VERTICAL);
         
@@ -309,8 +309,8 @@ public class LeanixGraphqlVariablesEditor extends FieldEditor {
                 	case 1: editGraphqlDialogArea.setData("page", 2);
                 	graphqlNameLabel.setVisible(false);
                 	graphqlName.setVisible(false);
-                	graphqlRequestLabel.setVisible(false);
-                	graphqlRequest.setVisible(false);
+                	graphqlQueryLabel.setVisible(false);
+                	graphqlquery.setVisible(false);
                 	graphqlVariablesLabel.setVisible(false);
                 	graphqlVariables.setVisible(false);
                 	btnNext.setText("Ok");
@@ -336,8 +336,8 @@ public class LeanixGraphqlVariablesEditor extends FieldEditor {
                 	case 2: editGraphqlDialogArea.setData("page", 1);
                 	graphqlNameLabel.setVisible(true);
                 	graphqlName.setVisible(true);
-                	graphqlRequestLabel.setVisible(true);
-                	graphqlRequest.setVisible(true);
+                	graphqlQueryLabel.setVisible(true);
+                	graphqlquery.setVisible(true);
                 	graphqlVariablesLabel.setVisible(true);
                 	graphqlVariables.setVisible(true);
                 	btnPrevious.setEnabled(true);
@@ -376,22 +376,22 @@ public class LeanixGraphqlVariablesEditor extends FieldEditor {
         fd.right = new FormAttachment(100, -10);
         graphqlName.setLayoutData(fd);
         
-        graphqlRequestLabel.setText("GraphQL request (must be JSON):");
+        graphqlQueryLabel.setText("GraphQL query (must be JSON):");
         fd = new FormData();
         fd.top = new FormAttachment(graphqlName, 10, SWT.BOTTOM);
         fd.left = new FormAttachment(0, 10);
-        graphqlRequestLabel.setLayoutData(fd);
+        graphqlQueryLabel.setLayoutData(fd);
         
         fd = new FormData();
-        fd.top = new FormAttachment(graphqlRequestLabel, 10);
+        fd.top = new FormAttachment(graphqlQueryLabel, 10);
         fd.bottom = new FormAttachment(60, 0);
         fd.left = new FormAttachment(0, 10);
         fd.right = new FormAttachment(100, -10);
-        graphqlRequest.setLayoutData(fd);
+        graphqlquery.setLayoutData(fd);
         
-        graphqlRequestLabel.setText("GraphQL variables (must be JSON):");
+        graphqlQueryLabel.setText("GraphQL variables (must be JSON):");
         fd = new FormData();
-        fd.top = new FormAttachment(graphqlRequest, 10, SWT.BOTTOM);
+        fd.top = new FormAttachment(graphqlquery, 10, SWT.BOTTOM);
         fd.left = new FormAttachment(0, 10);
         graphqlVariablesLabel.setLayoutData(fd);
         
@@ -405,7 +405,7 @@ public class LeanixGraphqlVariablesEditor extends FieldEditor {
         
         if ( leanixGraphql == null ) {
         	graphqlName.setText("");
-        	graphqlRequest.setText("");
+        	graphqlquery.setText("");
         	graphqlVariables.setText("");
         }
         
